@@ -1,0 +1,6 @@
+# default meson build directory
+[Bb]uilddir
+
+# vscode folder
+.vscode
+
