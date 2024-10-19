@@ -72,8 +72,8 @@ int main(int argc, char** argv)
   // Check input arguments:
   if (argc < 2)
   {
-    std::cout << "Usage: " << argv[0] << " <media file or uri>" << std::endl;
-    //return EXIT_FAILURE;
+    std::cout << "Usage: " << argv[0] << " <media file or uri>\n" <<
+        "Uri argument not supplied, use the default uri." << std::endl;
     // Don't fail, use the default uri
     uri = "https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm";
   }

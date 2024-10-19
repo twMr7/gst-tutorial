@@ -1,6 +1,9 @@
-# Python Development Environment Setup for Gstreamer
+# Python Development Environment Setup for GStreamer
 
-TODO: differences between system python and venv
+The default method for installing packages from distros is normally fine.
+[venv](https://docs.python.org/3/library/venv.html) is usually the way to go instead
+if you need to `pip install` the latest packages and want to avoid conflicts with system packages.
+.
 
 ## Gst-Python Installation for System Python
 
