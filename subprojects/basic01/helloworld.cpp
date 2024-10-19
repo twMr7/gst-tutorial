@@ -65,26 +65,16 @@ bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
 
 int main(int argc, char** argv)
 {
+  // Check input arguments:
+  if(argc < 2)
+  {
+    std::cout << "Usage: " << argv[0] << " <media file or uri>" << std::endl;
+    std::cout << "example uri https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Initialize gstreamermm:
   Gst::init(argc, argv);
-
-  Glib::ustring uri;
-  // Check input arguments:
-  if (argc < 2)
-  {
-    std::cout << "Usage: " << argv[0] << " <media file or uri>\n" <<
-        "Uri argument not supplied, use the default uri." << std::endl;
-    // Don't fail, use the default uri
-    uri = "https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm";
-  }
-  else
-  {
-    // Take the commandline argument and ensure that it is a uri:
-    if(gst_uri_is_valid(argv[1]))
-      uri = argv[1];
-    else
-      uri = Glib::filename_to_uri(argv[1]);
-  }
 
   // Create a playbin element.
 #ifndef GSTREAMERMM_DISABLE_DEPRECATED
@@ -98,6 +88,14 @@ int main(int argc, char** argv)
     std::cerr << "The playbin2 element could not be created." << std::endl;
     return EXIT_FAILURE;
   }
+
+  // Take the commandline argument and ensure that it is a uri:
+  Glib::ustring uri;
+
+  if(gst_uri_is_valid(argv[1]))
+    uri = argv[1];
+  else
+    uri = Glib::filename_to_uri(argv[1]);
 
   // Set the playbyin2's uri property.
   playbin->set_property("uri", uri);
