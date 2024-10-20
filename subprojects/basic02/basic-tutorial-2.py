@@ -3,10 +3,6 @@ import sys
 import gi
 import logging
 
-"""
-NOTE: MUST install the following packages on Ubuntu for Python app using GStreamer.
-        $ sudo apt install python3-gst-1.0 gir1.2-gst-plugins-base-1.0 
-"""
 gi.require_version("GLib", "2.0")
 gi.require_version("GObject", "2.0")
 gi.require_version("Gst", "1.0")

@@ -30,7 +30,7 @@ Glib::RefPtr<Glib::MainLoop> mainloop;
 
 // This function is used to receive asynchronous messages in the main loop.
 bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
-  const Glib::RefPtr<Gst::Message>& message)
+    const Glib::RefPtr<Gst::Message>& message)
 {
   switch(message->get_message_type()) {
     case Gst::MESSAGE_EOS:
