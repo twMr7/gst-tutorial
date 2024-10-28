@@ -32,7 +32,7 @@ def on_pad_added(src, new_pad, data):
     sink_pad = data.convert.get_static_pad("sink")
     # If our converter is already linked, we have nothing to do here
     if (sink_pad.is_linked()):
-        logger.error("We are already linked. Ignoring.")
+        logger.error("sink pad of convert is already linked. Ignoring.")
         return
 
     # Retrieves the current capabilities of the new pad
