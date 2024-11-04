@@ -13,7 +13,7 @@ and they are organized in subprojects to match the order of the "Tutorial" secti
 
 ## Development Environment Setup
 
-All codes are built and verified on Ubuntu 22.04.
+All codes are built and verified on Ubuntu 24.04 (22.04 should also work).
 [`Meson`](https://mesonbuild.com/) is used to build all the C and C++ codes.
 
 GStreamer is built on top of the `GObject` and `GLib`.
@@ -41,4 +41,25 @@ $ sudo apt install \
     gir1.2-gst-plugins-base-1.0 \
     gir1.2-gst-plugins-bad-1.0 \
     gir1.2-gst-rtsp-server-1.0
+```
+
+## Build The Tutorial Examples
+
+```shell
+$ cd gst-tutorial
+$ meson setup builddir
+$ meson compile -v -C builddir
+```
+
+Clean up all the built binaries.
+
+```shell
+$ meson compile -v -C builddir --clean
+```
+
+Each subject of the tutorial is organized in the *subprojects* folder.
+Use the following example command to build a single tutorial target.
+
+```shell
+$ meson compile -v -C builddir basic03cpp
 ```
