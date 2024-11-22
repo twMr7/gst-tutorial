@@ -30,6 +30,15 @@ class CustomData:
         self.duration = Gst.CLOCK_TIME_NONE;
 
 
+def format_gst_time(nsec):
+    """Convert nanoseconds to H:M:S.ns format
+    """
+    t_sec, remain_nsec = divmod(nsec, 1000000000)
+    hours, remain_sec = divmod(t_sec, 3600)
+    minutes, seconds = divmod(remain_sec, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{remain_nsec:09d}"
+
+
 def on_bus_message(bus, message, data):
     if message.type == Gst.MessageType.EOS:
         logger.info("End-of-stream reached.")
@@ -40,6 +49,7 @@ def on_bus_message(bus, message, data):
         logger.error(f"Debugging information: {debug_info if debug_info else 'none'}")
         data.loop.quit()
     elif message.type == Gst.MessageType.DURATION_CHANGED:
+        # The duration has changed, mark the current one as invalid
         data.duration = Gst.CLOCK_TIME_NONE
     elif message.type == Gst.MessageType.STATE_CHANGED:
         # We are only interested in state-changed messages from the pipeline
@@ -54,7 +64,8 @@ def on_bus_message(bus, message, data):
                 data.playbin.query(query)
                 format, data.seekable, segment_start, segment_end = query.parse_seeking()
                 if data.seekable:
-                    logger.info(f"Seeking is ENABLED from {segment_start} to {segment_end}")
+                    logger.info(f"Seeking is ENABLED from {format_gst_time(segment_start)} " \
+                                f"to {format_gst_time(segment_end)}")
                 else:
                     logger.info("Seeking is DISABLED for this stream.")
     else:
@@ -62,30 +73,27 @@ def on_bus_message(bus, message, data):
     return True
 
 
-def format_nanoseconds(nsec):
-    """Convert nanoseconds to H:M:S.ns format
-    """
-    t_sec, remain_nsec = divmod(nsec, 1000000000)
-    hours, remain_sec = divmod(t_sec, 3600)
-    minutes, seconds = divmod(remain_sec, 60)
-    return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{remain_nsec:09d}"
-
-
 def on_timeout(data):
     # only if playing
     if data.playing:
+        # Query the current position of the stream
         query_ok, position = data.playbin.query_position(Gst.Format.TIME)
         if not query_ok:
             logger.error("Could not query current position.")
             position = Gst.CLOCK_TIME_NONE
 
-        query_ok, duration = data.playbin.query_duration(Gst.Format.TIME)
-        if not query_ok:
-            logger.error("Could not query current duration.")
-            duration = Gst.CLOCK_TIME_NONE
+        # If we didn't know it yet, query the stream duration
+        if data.duration == Gst.CLOCK_TIME_NONE:
+            query_ok, data.duration = data.playbin.query_duration(Gst.Format.TIME)
+            if not query_ok:
+                logger.error("Could not query current duration.")
+                data.duration = Gst.CLOCK_TIME_NONE
         
-        print(f"Position {format_nanoseconds(position)} / {format_nanoseconds(duration)} \r", end='', file=sys.stdout)
+        # Print current position and total duration
+        print(f"Position {format_gst_time(position)} / {format_gst_time(data.duration)} \r",
+                end='', file=sys.stdout)
 
+        # If seeking is enabled, we have not done it yet, and the time is right, seek
         if (data.seekable) and (not data.seek_done) and (position > 10 * Gst.SECOND):
             logger.info("Reached 10s, performing seek...")
             data.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, 30 * Gst.SECOND)
@@ -108,7 +116,7 @@ def main(argv):
 
     playbin = Gst.ElementFactory.make("playbin", None)
     if not playbin:
-        sys.stderr.write("'playbin' gstreamer plugin missing\n")
+        sys.stderr.write("The playbin element could not be created.\n")
         sys.exit(1)
 
     # Set the URI to play
@@ -124,7 +132,7 @@ def main(argv):
     bus.add_signal_watch()
     bus.connect("message", on_bus_message, data)
 
-    # timrout of 100 milliseconds
+    # timeout of 100 milliseconds
     GLib.timeout_add(100, on_timeout, data)
 
     # start play back and listen to events

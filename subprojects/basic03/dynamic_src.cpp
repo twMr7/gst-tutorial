@@ -125,14 +125,14 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  // Set the playbyin2's uri property.
+  // Set the URI to play
   source->set_property("pattern", 0);
 
   // Create the main loop.
   mainloop = Glib::MainLoop::create();
 
   // Get the bus and watch the messages
-  Glib::RefPtr<Gst::Bus> bus {pipeline->get_bus()};
+  RefPtr<Gst::Bus> bus {pipeline->get_bus()};
   bus->add_watch(sigc::ptr_fun(&on_bus_message));
 
   // start play back and listen to events

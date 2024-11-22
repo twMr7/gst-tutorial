@@ -15,8 +15,7 @@ Glib::RefPtr<Glib::MainLoop> mainloop;
 bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
     const Glib::RefPtr<Gst::Message>& message)
 {
-  switch(message->get_message_type())
-  {
+  switch (message->get_message_type()) {
     case Gst::MESSAGE_EOS:
       std::cout << std::endl << "End of stream" << std::endl;
       mainloop->quit();
@@ -124,7 +123,7 @@ int main(int argc, char** argv)
     std::cout << "Exception while linking elements: " << ex.what() << std::endl;
   }
 
-  // Set the playbyin2's uri property.
+  // Set the uri property.
   source->set_property("uri", uri);
   // Signal handler for on-pad-added signal of source element
   // Here we use lambda to expose local variables that are needed

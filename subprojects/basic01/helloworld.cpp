@@ -32,7 +32,7 @@ Glib::RefPtr<Glib::MainLoop> mainloop;
 bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
     const Glib::RefPtr<Gst::Message>& message)
 {
-  switch(message->get_message_type()) {
+  switch (message->get_message_type()) {
     case Gst::MESSAGE_EOS:
       std::cout << std::endl << "End of stream" << std::endl;
       mainloop->quit();
@@ -42,7 +42,7 @@ bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
       Glib::RefPtr<Gst::MessageError> msgError =
         Glib::RefPtr<Gst::MessageError>::cast_static(message);
 
-      if(msgError)
+      if (msgError)
       {
         Glib::Error err;
         err = msgError->parse_error();
@@ -66,7 +66,7 @@ bool on_bus_message(const Glib::RefPtr<Gst::Bus>& /* bus */,
 int main(int argc, char** argv)
 {
   // Check input arguments:
-  if(argc < 2)
+  if (argc < 2)
   {
     std::cout << "Usage: " << argv[0] << " <media file or uri>" << std::endl;
     std::cout << "example uri https://gstreamer.freedesktop.org/data/media/sintel_trailer-480p.webm" << std::endl;
@@ -83,21 +83,21 @@ int main(int argc, char** argv)
   Glib::RefPtr<Gst::Element> playbin = Gst::ElementFactory::create_element("playbin");
 #endif
   
-  if(!playbin)
+  if (!playbin)
   {
-    std::cerr << "The playbin2 element could not be created." << std::endl;
+    std::cerr << "The playbin element could not be created." << std::endl;
     return EXIT_FAILURE;
   }
 
   // Take the commandline argument and ensure that it is a uri:
   Glib::ustring uri;
 
-  if(gst_uri_is_valid(argv[1]))
+  if (gst_uri_is_valid(argv[1]))
     uri = argv[1];
   else
     uri = Glib::filename_to_uri(argv[1]);
 
-  // Set the playbyin2's uri property.
+  // Set the playbin's uri property.
   playbin->set_property("uri", uri);
 
   // Create the main loop.

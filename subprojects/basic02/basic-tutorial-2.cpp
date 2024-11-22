@@ -24,31 +24,30 @@ bool bus_message_watch(const Glib::RefPtr<Gst::Bus>& /* bus */,
     std::cout << "Source object: " << message->get_source()->get_name() << std::endl;
   }
 
-  switch (message->get_message_type())
-  {
-  // Handle ERROR message - print error and debug information
-  case Gst::MESSAGE_ERROR:
-  {
-    auto error_msg = Glib::RefPtr<Gst::MessageError>::cast_static(message);
-    std::cout << "Error: " << error_msg->parse_error().what() << std::endl;
-    std::cout << "Debug: " << error_msg->parse_debug() << std::endl;
-    break;
-  }
-  // Handle EOS message - quit the loop
-  case Gst::MESSAGE_EOS:
-    main_loop->quit();
-    break;
-  // Handle state changed message - print details
-  case Gst::MESSAGE_STATE_CHANGED:
-  {
-    auto state_changed_msg = Glib::RefPtr<Gst::MessageStateChanged>::cast_static(message);
-    std::cout << "Old state: " << Gst::Enums::get_name(state_changed_msg->parse_old_state()) << std::endl;
-    std::cout << "New state: " << Gst::Enums::get_name(state_changed_msg->parse_new_state()) << std::endl;
-    break;
-  }
-  // Unhanlded messages
-  default:
-    break;
+  switch (message->get_message_type()) {
+    // Handle ERROR message - print error and debug information
+    case Gst::MESSAGE_ERROR:
+    {
+      auto error_msg = Glib::RefPtr<Gst::MessageError>::cast_static(message);
+      std::cout << "Error: " << error_msg->parse_error().what() << std::endl;
+      std::cout << "Debug: " << error_msg->parse_debug() << std::endl;
+      break;
+    }
+    // Handle EOS message - quit the loop
+    case Gst::MESSAGE_EOS:
+      main_loop->quit();
+      break;
+    // Handle state changed message - print details
+    case Gst::MESSAGE_STATE_CHANGED:
+    {
+      auto state_changed_msg = Glib::RefPtr<Gst::MessageStateChanged>::cast_static(message);
+      std::cout << "Old state: " << Gst::Enums::get_name(state_changed_msg->parse_old_state()) << std::endl;
+      std::cout << "New state: " << Gst::Enums::get_name(state_changed_msg->parse_new_state()) << std::endl;
+      break;
+    }
+    // Unhanlded messages
+    default:
+      break;
   }
 
   return true;
